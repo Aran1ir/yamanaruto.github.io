@@ -1,0 +1,624 @@
+/* ============================================
+   ПЕРСОНАЖИ — карточки, глобальный список,
+   выбор персонажа для арки, ВАРИАЦИИ
+   ============================================ */
+.characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+}
+
+.character-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 10px 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 176px;
+}
+
+.character-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--chakra-orange), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.character-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 107, 53, 0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.character-card:hover::before { opacity: 1; }
+.character-card:active { transform: translateY(-2px) scale(0.98); }
+
+.character-portrait {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+.character-card:hover .character-portrait {
+    border-color: var(--chakra-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+}
+
+.death-icon {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 22px;
+    height: 22px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.character-name-display {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.3;
+    word-break: break-word;
+    hyphens: auto;
+    min-height: 2.6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.character-dead-label {
+    font-size: 0.75rem;
+    color: #ff4444;
+    text-align: center;
+    margin-top: 4px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* Индикатор количества вариаций */
+.variation-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 107, 53, 0.85);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 8px;
+    z-index: 2;
+    border: 1px solid var(--chakra-yellow);
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+}
+
+.add-character-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: rgba(255, 255, 255, 0.3);
+    min-height: 150px;
+}
+
+.add-character-btn:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.03);
+}
+
+.add-character-btn svg { width: 32px; height: 32px; }
+
+.file-input-hidden { display: none; }
+
+.dead-character {
+    filter: grayscale(100%) brightness(0.6);
+    transition: filter 0.3s ease;
+}
+
+/* Глобальный список персонажей */
+.global-char-select-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.global-char-select-item:hover {
+    background: rgba(255, 107, 53, 0.08);
+    border-color: rgba(255, 107, 53, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.global-char-select-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+}
+
+.global-char-select-item:hover img {
+    border-color: var(--chakra-orange);
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
+}
+
+.global-char-select-item span {
+    font-size: 1rem;
+    color: #e0e0e0;
+    font-weight: 500;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.global-char-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 16px;
+}
+
+.global-char-list::-webkit-scrollbar { width: 6px; }
+.global-char-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 3px; }
+.global-char-list::-webkit-scrollbar-thumb { background: rgba(255, 107, 53, 0.3); border-radius: 3px; }
+
+.global-char-list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.global-char-list-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 107, 53, 0.2);
+}
+
+.global-char-list-item img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.global-char-list-name {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.global-char-list-variation-count {
+    font-size: 0.75rem;
+    color: var(--chakra-orange);
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.global-char-list-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.global-char-modal .modal { max-width: 600px; }
+
+/* Форма глобального персонажа с вариациями */
+.global-char-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 16px;
+}
+
+.global-char-form-title {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+
+.variations-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.variations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.variations-list::-webkit-scrollbar { width: 6px; }
+.variations-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 3px; }
+.variations-list::-webkit-scrollbar-thumb { background: rgba(255, 107, 53, 0.3); border-radius: 3px; }
+
+.variation-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.variation-row:hover {
+    border-color: rgba(255, 107, 53, 0.25);
+    background: rgba(255, 107, 53, 0.04);
+}
+
+.variation-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.variation-thumb.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.3);
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+}
+
+.variation-caption-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 6px 0;
+    outline: none;
+    transition: border-color 0.3s;
+    min-width: 0;
+}
+
+.variation-caption-input:focus { border-bottom-color: var(--chakra-orange); }
+
+.variation-delete-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(139, 0, 0, 0.3);
+    color: rgba(255, 68, 68, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.variation-delete-btn:hover {
+    background: rgba(200, 0, 0, 0.3);
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.add-variation-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 107, 53, 0.3);
+    border-radius: 10px;
+    color: rgba(255, 107, 53, 0.7);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.add-variation-btn:hover {
+    background: rgba(255, 107, 53, 0.06);
+    border-color: var(--chakra-orange);
+    color: var(--chakra-orange);
+}
+
+.variations-empty {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 0.85rem;
+}
+
+/* Модальное окно добавления персонажа из списка в арку */
+.add-arc-char-modal .modal {
+    max-width: 1100px;
+    width: 95%;
+    padding: 28px;
+}
+
+.add-arc-char-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 16px;
+}
+
+.add-arc-char-list::-webkit-scrollbar { width: 6px; }
+.add-arc-char-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 3px; }
+.add-arc-char-list::-webkit-scrollbar-thumb { background: rgba(255, 107, 53, 0.3); border-radius: 3px; }
+
+.char-group { margin-bottom: 16px; }
+
+.char-group-label {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--chakra-orange);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+}
+
+.char-group-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+@media (max-width: 768px) {
+    .characters-grid { grid-template-columns: repeat(2, 1fr); }
+    .char-group-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .char-group-grid { grid-template-columns: 1fr; }
+}
+
+/* Модальное окно редактирования персонажа в арке */
+.edit-arc-char-portrait {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 3px solid rgba(255, 107, 53, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.15);
+}
+
+.edit-arc-char-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.edit-arc-char-portrait.dead { filter: grayscale(100%) brightness(0.6); }
+
+.edit-arc-char-name {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+/* Выбор вариации в модальном окне персонажа арки */
+.variation-picker-section {
+    margin-bottom: 20px;
+}
+
+.variation-picker-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.variation-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.variation-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.variation-option:hover {
+    border-color: rgba(255, 107, 53, 0.5);
+    background: rgba(255, 107, 53, 0.05);
+    transform: translateY(-3px);
+}
+
+.variation-option.active {
+    border-color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.12);
+    box-shadow: 0 0 18px rgba(255, 107, 53, 0.25);
+}
+
+.variation-option img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.variation-option.active img {
+    border-color: var(--chakra-yellow);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+.variation-option-caption {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    line-height: 1.2;
+    word-break: break-word;
+    min-height: 1.8em;
+}
+
+.variation-option.active .variation-option-caption { color: var(--chakra-yellow); }
+
+.char-modal-name-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+}
+
+.char-modal-name-input:focus { border-color: var(--chakra-orange); }
+
+/* Поле поиска персонажа по имени (в модальных окнах) */
+.char-modal-search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.char-modal-search-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.char-modal-search-input:focus { border-color: var(--chakra-orange); }
+
+/* Подсветка совпавшей части имени */
+.char-name-mark {
+    color: var(--chakra-yellow);
+    font-weight: 700;
+}
+
+.death-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.death-checkbox input { display: none; }
+
+.death-checkbox-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+
+.death-checkbox input:checked + .death-checkbox-icon {
+    background: rgba(139, 0, 0, 0.3);
+    border-color: rgba(255, 50, 50, 0.5);
+    color: #ff4444;
+}
+
+.death-checkbox-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}

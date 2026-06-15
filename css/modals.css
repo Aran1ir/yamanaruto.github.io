@@ -1,0 +1,182 @@
+/* ============================================
+   МОДАЛЬНЫЕ ОКНА — общие, редактирование арки,
+   добавление опенинга
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+}
+
+.modal-overlay.active .modal { transform: translateY(0); }
+
+.modal-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.modal-textarea {
+    width: 100%;
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 16px;
+}
+
+.modal-textarea:focus { border-color: var(--chakra-orange); }
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.modal-btn.primary {
+    background: linear-gradient(135deg, var(--chakra-orange), var(--chakra-yellow));
+    color: #000;
+}
+
+.modal-btn.primary:hover { box-shadow: 0 0 20px rgba(255, 107, 53, 0.3); }
+
+.modal-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.file-import-label {
+    display: block;
+    padding: 40px;
+    border: 2px dashed rgba(255, 107, 53, 0.3);
+    border-radius: 12px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.file-import-label:hover {
+    border-color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.05);
+    color: var(--chakra-orange);
+}
+
+.import-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Редактирование арки */
+.arc-edit-modal .modal { max-width: 450px; }
+
+.arc-edit-cover-preview {
+    width: 100%;
+    height: 120px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.arc-edit-cover-preview:hover {
+    border-color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.03);
+    color: var(--chakra-orange);
+}
+
+.arc-edit-cover-preview.has-image {
+    border-style: solid;
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.arc-edit-cover-preview img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(8px) brightness(0.5);
+}
+
+.arc-edit-cover-preview span { position: relative; z-index: 1; }
+
+.arc-edit-section { margin-bottom: 20px; }
+
+.arc-edit-section-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.char-modal .modal { max-width: 400px; }

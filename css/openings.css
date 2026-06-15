@@ -1,0 +1,207 @@
+/* ============================================
+   ОПЕНИНГИ / ЭНДИНГИ — список и встроенный плеер
+   ============================================ */
+.openings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.opening-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    min-height: 50px;
+}
+
+.opening-item:hover {
+    border-color: rgba(255, 107, 53, 0.2);
+    background: rgba(255, 107, 53, 0.05);
+    transform: translateX(4px);
+}
+
+.opening-item.active {
+    border-color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.1);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.1);
+}
+
+.opening-type-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255, 107, 53, 0.15);
+    color: var(--chakra-orange);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    flex-shrink: 0;
+    min-width: 40px;
+    text-align: center;
+}
+
+.opening-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.opening-name {
+    color: #e0e0e0;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.opening-item:hover .opening-name { color: var(--chakra-yellow); }
+.opening-item.active .opening-name { color: var(--chakra-orange); }
+
+.opening-actions-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.opening-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.opening-edit-btn {
+    border-color: rgba(255, 107, 53, 0.3);
+    color: rgba(255, 107, 53, 0.6);
+    font-size: 0.9rem;
+}
+
+.opening-edit-btn:hover {
+    background: rgba(255, 107, 53, 0.2);
+    border-color: var(--chakra-orange);
+    color: var(--chakra-orange);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
+}
+
+.opening-delete-btn {
+    border-color: rgba(139, 0, 0, 0.3);
+    color: rgba(255, 68, 68, 0.5);
+    font-size: 0.8rem;
+}
+
+.opening-delete-btn:hover {
+    background: rgba(200, 0, 0, 0.3);
+    border-color: #ff4444;
+    color: #ff4444;
+    box-shadow: 0 0 10px rgba(255, 50, 50, 0.3);
+}
+
+/* Встроенный плеер в карточке арки */
+.inline-player {
+    margin-top: 12px;
+    margin-bottom: 16px;
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.inline-player-inner {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+}
+
+.inline-player-inner iframe,
+.inline-player-inner #youtube-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.close-player-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    z-index: 10;
+    transition: all 0.3s;
+}
+
+.close-player-btn:hover {
+    background: rgba(200, 0, 0, 0.8);
+    border-color: #ff4444;
+}
+
+.add-opening-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 107, 53, 0.3);
+    border-radius: 10px;
+    color: rgba(255, 107, 53, 0.6);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.add-opening-btn:hover {
+    background: rgba(255, 107, 53, 0.05);
+    border-color: var(--chakra-orange);
+    color: var(--chakra-orange);
+}
+
+.drive-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.3s;
+}
+
+.drive-input:focus { border-color: var(--chakra-orange); }

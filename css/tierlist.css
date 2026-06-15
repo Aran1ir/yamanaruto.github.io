@@ -1,0 +1,462 @@
+/* ============================================
+   ТИР-ЛИСТ
+   ============================================ */
+.tierlist-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 16px;
+    color: rgba(255, 107, 53, 0.8);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.tierlist-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 215, 0, 0.1));
+    border-color: var(--chakra-orange);
+    color: var(--chakra-orange);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.15);
+    transform: translateY(-2px);
+}
+
+.tierlist-btn svg { width: 24px; height: 24px; }
+
+/* Модальное окно тир-листа */
+.tierlist-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(15px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+}
+
+.tierlist-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.tierlist-modal {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 1100px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 32px;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.tierlist-modal-overlay.active .tierlist-modal { transform: translateY(0); }
+
+.tierlist-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tierlist-modal-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tierlist-close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+.tierlist-close-btn:hover {
+    background: rgba(255, 68, 68, 0.2);
+    border-color: rgba(255, 68, 68, 0.4);
+    color: #ff4444;
+}
+
+/* Таблица тир-листа */
+.tierlist-table {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tierlist-row {
+    display: flex;
+    min-height: 80px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tierlist-row.drag-over { box-shadow: inset 0 0 0 2px var(--chakra-orange); }
+
+.tierlist-row-label {
+    width: 70px;
+    min-width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.tierlist-row-label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.15;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+}
+
+.tierlist-row-content {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 8px;
+    padding: 12px;
+    min-height: 80px;
+    transition: all 0.3s ease;
+}
+
+.tierlist-row-content.drag-over {
+    background: rgba(255, 107, 53, 0.08);
+    box-shadow: inset 0 0 0 2px rgba(255, 107, 53, 0.4);
+}
+
+/* Цвета тиров */
+.tier-s { background: linear-gradient(135deg, #ff4d4d, #ff1a1a); }
+.tier-a { background: linear-gradient(135deg, #ff8c42, #ff6b1a); }
+.tier-b { background: linear-gradient(135deg, #ffd93d, #ffb800); }
+.tier-c { background: linear-gradient(135deg, #6bcb77, #4caf50); }
+.tier-d { background: linear-gradient(135deg, #4d96ff, #2979ff); }
+
+/* Карточка песни в тир-листе */
+.tierlist-item {
+    width: 140px;
+    height: 90px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    transition: all 0.2s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-drag: element;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
+
+.tierlist-item:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: rgba(255, 107, 53, 0.5);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.tierlist-item.dragging {
+    opacity: 0.6;
+    cursor: grabbing;
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.tierlist-item-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(3px) brightness(0.5);
+    z-index: 1;
+}
+
+.tierlist-item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+    z-index: 2;
+}
+
+.tierlist-item-name {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    z-index: 3;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+}
+
+.tierlist-item-actions {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    display: flex;
+    gap: 4px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tierlist-item:hover .tierlist-item-actions { opacity: 1; }
+
+.tierlist-item-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.tierlist-item-btn:hover {
+    background: rgba(255, 107, 53, 0.8);
+    border-color: var(--chakra-orange);
+}
+
+.tierlist-item-btn.delete:hover {
+    background: rgba(255, 68, 68, 0.8);
+    border-color: #ff4444;
+}
+
+/* Пул песен */
+.tierlist-pool-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tierlist-pool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.tierlist-pool-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.tierlist-pool-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.tierlist-pool-btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tierlist-pool-btn.primary {
+    background: linear-gradient(135deg, var(--chakra-orange), var(--chakra-yellow));
+    color: #000;
+}
+
+.tierlist-pool-btn.primary:hover {
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+    transform: translateY(-1px);
+}
+
+.tierlist-pool-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tierlist-pool-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.tierlist-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    min-height: 120px;
+    transition: all 0.3s ease;
+}
+
+.tierlist-pool.drag-over {
+    border-color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.05);
+    box-shadow: inset 0 0 30px rgba(255, 107, 53, 0.08);
+}
+
+.tierlist-pool-empty {
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    font-size: 0.9rem;
+}
+
+/* Модальное окно добавления/редактирования песни */
+.tierlist-song-modal .modal { max-width: 420px; }
+.tierlist-song-modal { z-index: 3000; }
+.tierlist-song-modal.active { opacity: 1; pointer-events: all; }
+
+.tierlist-song-preview {
+    width: 100%;
+    height: 160px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.tierlist-song-preview:hover {
+    border-color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.03);
+    color: var(--chakra-orange);
+}
+
+.tierlist-song-preview.has-image {
+    border-style: solid;
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.tierlist-song-preview img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(4px) brightness(0.6);
+}
+
+.tierlist-song-preview span { position: relative; z-index: 1; }
+
+.tierlist-song-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+}
+
+.tierlist-song-input:focus { border-color: var(--chakra-orange); }
+
+.tierlist-item.selected-for-move {
+    box-shadow: 0 0 0 3px var(--chakra-orange), 0 0 20px rgba(255, 107, 53, 0.5);
+    animation: pulseSelect 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulseSelect {
+    0% { box-shadow: 0 0 0 3px var(--chakra-orange), 0 0 10px rgba(255, 107, 53, 0.3); }
+    100% { box-shadow: 0 0 0 3px var(--chakra-orange), 0 0 25px rgba(255, 107, 53, 0.6); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .tierlist-modal { padding: 20px; max-height: 95vh; }
+    .tierlist-item { width: 120px; height: 80px; }
+    .tierlist-row-label { width: 50px; min-width: 50px; font-size: 1.4rem; }
+    .tierlist-pool-btn { padding: 8px 14px; font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+    .tierlist-item { width: 100px; height: 70px; }
+    .tierlist-item-name { font-size: 0.7rem; }
+}
