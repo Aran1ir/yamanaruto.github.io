@@ -22,8 +22,17 @@ async function loadTierList() {
             if (song.imageId) {
                 song.image = await getImageFromDB(song.imageId) || '';
             }
+            // ponytail: нормализуем youtube-ссылку, чтобы превью и плеер работали единообразно
+            song.youtubeUrl = song.youtubeUrl || '';
         }
     }
+}
+
+// ponytail: видео в тир-листе единое на весь список, активного может не быть
+let currentPlayingTierSongId = null;
+
+function getTierSongYouTubeId(song) {
+    return song.youtubeUrl ? extractYouTubeId(song.youtubeUrl) : null;
 }
 
 async function saveTierList() {
@@ -32,7 +41,8 @@ async function saveTierList() {
             id: s.id,
             name: s.name,
             image: '',
-            imageId: s.imageId || ''
+            imageId: s.imageId || '',
+            youtubeUrl: s.youtubeUrl || ''
         })),
         assignments: tierListAssignments
     };
@@ -46,8 +56,46 @@ function openTierListModal() {
 }
 
 function closeTierListModal() {
+    closeTierListPlayer();
     document.getElementById('tierListModal').classList.remove('active');
     document.body.style.overflow = '';
+}
+
+// ponytail: один встроенный плеер на тир-лист. Двойной клик по карточке открывает/закрывает.
+function toggleTierSongPlay(songId) {
+    const song = tierListSongs.find(s => s.id === songId);
+    if (!song) return;
+
+    // повторный двойной клик по играющей песне — закрываем
+    if (currentPlayingTierSongId === songId) {
+        closeTierListPlayer();
+        return;
+    }
+
+    const videoId = getTierSongYouTubeId(song);
+    if (!videoId) return;
+
+    destroyYTPlayer();
+    currentPlayingTierSongId = songId;
+
+    const wrap = document.getElementById('tierListPlayerWrap');
+    if (wrap) wrap.style.display = 'block';
+
+    renderTierList();
+    setTimeout(() => {
+        if (document.getElementById('tierListPlayerContainer')) {
+            createYTPlayer('tierListPlayerContainer', videoId);
+        }
+    }, 100);
+}
+
+function closeTierListPlayer() {
+    if (currentPlayingTierSongId === null && !ytPlayer) return;
+    destroyYTPlayer();
+    currentPlayingTierSongId = null;
+    const wrap = document.getElementById('tierListPlayerWrap');
+    if (wrap) wrap.style.display = 'none';
+    renderTierList();
 }
 
 function renderTierList() {
@@ -88,20 +136,49 @@ function renderTierList() {
             pool.appendChild(el);
         });
     }
+
+    // ponytail: восстанавливаем встроенный плеер после перерисовки, если песня всё ещё активна
+    if (currentPlayingTierSongId !== null) {
+        const song = tierListSongs.find(s => s.id === currentPlayingTierSongId);
+        const videoId = song ? getTierSongYouTubeId(song) : null;
+        const container = document.getElementById('tierListPlayerContainer');
+        if (song && videoId && container) {
+            setTimeout(() => createYTPlayer('tierListPlayerContainer', videoId), 100);
+        } else {
+            currentPlayingTierSongId = null;
+        }
+    }
+}
+
+// ponytail: фон карточки — превью YouTube, если ссылка есть; иначе старое изображение
+function getTierItemBg(song) {
+    const ytId = getTierSongYouTubeId(song);
+    if (ytId) {
+        return `background-image: url('https://i.ytimg.com/vi/${ytId}/hqdefault.jpg')`;
+    }
+    return song.image ? `background-image: url('${song.image}')` : '';
+}
+
+function getTierItemBgClass(song) {
+    return getTierSongYouTubeId(song) ? 'tierlist-item-bg youtube-preview' : 'tierlist-item-bg';
 }
 
 function createTierListItemElement(song, location) {
     const div = document.createElement('div');
     div.className = 'tierlist-item';
+    if (currentPlayingTierSongId === song.id) div.classList.add('playing');
     div.draggable = true;
     div.dataset.songId = song.id;
     div.dataset.location = location;
 
-    const bgStyle = song.image ? `background-image: url('${song.image}')` : '';
+    const bgStyle = getTierItemBg(song);
+    const bgClass = getTierItemBgClass(song);
+    const ytId = getTierSongYouTubeId(song);
 
     div.innerHTML = `
-        <div class="tierlist-item-bg" style="${bgStyle}"></div>
+        <div class="${bgClass}" style="${bgStyle}"></div>
         <div class="tierlist-item-overlay"></div>
+        ${ytId ? `<div class="tierlist-item-yt-badge" title="Откройте двойным кликом">▶</div>` : ''}
         <div class="tierlist-item-name">${escapeHtml(song.name)}</div>
         <div class="tierlist-item-actions">
             <button class="tierlist-item-btn" onclick="event.stopPropagation(); editTierListSong(${song.id})" title="Редактировать">✎</button>
@@ -112,6 +189,15 @@ function createTierListItemElement(song, location) {
     div.addEventListener('dragstart', handleTierItemDragStart);
     div.addEventListener('dragend', handleTierItemDragEnd);
     div.addEventListener('click', (e) => handleTierItemClick(e, song.id));
+    // ponytail: двойной ЛКМ открывает встроенный проигрыватель. Сбрасываем режим перемещения,
+    // иначе одиночный клик перед dblclick активировал бы selectedTierItem.
+    div.addEventListener('dblclick', (e) => {
+        if (e.target.closest('.tierlist-item-actions')) return;
+        if (!ytId) return;
+        selectedTierItem = null;
+        document.querySelectorAll('.tierlist-item.selected-for-move').forEach(i => i.classList.remove('selected-for-move'));
+        toggleTierSongPlay(song.id);
+    });
 
     return div;
 }
@@ -246,6 +332,7 @@ function openAddSongModal() {
     document.getElementById('tierListSongModalTitle').textContent = 'Добавить песню';
     document.getElementById('tierListSongSaveBtn').textContent = 'Добавить';
     document.getElementById('tierListSongName').value = '';
+    document.getElementById('tierListSongUrl').value = '';
     const preview = document.getElementById('tierListSongPreview');
     preview.innerHTML = `
         ${icons.imagePlaceholderSvg}
@@ -253,6 +340,7 @@ function openAddSongModal() {
     `;
     preview.classList.remove('has-image');
     preview.dataset.imageData = '';
+    updateTierListSongPreviewUrl();
     document.getElementById('tierListSongModal').classList.add('active');
 }
 
@@ -264,6 +352,7 @@ function editTierListSong(songId) {
     document.getElementById('tierListSongModalTitle').textContent = 'Редактировать песню';
     document.getElementById('tierListSongSaveBtn').textContent = 'Сохранить';
     document.getElementById('tierListSongName').value = song.name;
+    document.getElementById('tierListSongUrl').value = song.youtubeUrl || '';
 
     const preview = document.getElementById('tierListSongPreview');
     if (song.image) {
@@ -279,7 +368,28 @@ function editTierListSong(songId) {
         preview.dataset.imageData = '';
     }
 
+    updateTierListSongPreviewUrl();
     document.getElementById('tierListSongModal').classList.add('active');
+}
+
+// ponytail: ссылка YouTube приоритетнее загруженного изображения — показываем её превью
+function updateTierListSongPreviewUrl() {
+    const url = document.getElementById('tierListSongUrl').value.trim();
+    const preview = document.getElementById('tierListSongPreview');
+    const note = preview.querySelector('.tierlist-song-preview-yt-note');
+
+    if (url && extractYouTubeId(url)) {
+        preview.classList.add('has-youtube');
+        if (!note) {
+            const span = document.createElement('span');
+            span.className = 'tierlist-song-preview-yt-note';
+            span.textContent = 'Превью берётся с YouTube';
+            preview.appendChild(span);
+        }
+    } else {
+        preview.classList.remove('has-youtube');
+        if (note) note.remove();
+    }
 }
 
 function handleTierListSongImage(input) {
@@ -301,12 +411,31 @@ async function saveTierListSong() {
     const name = document.getElementById('tierListSongName').value.trim() || 'Без названия';
     const preview = document.getElementById('tierListSongPreview');
     const imageData = preview.dataset.imageData || '';
+    const rawUrl = document.getElementById('tierListSongUrl').value.trim();
+
+    // ponytail: если ссылка невалидна — не даём сохранить, изображение тут не спасёт
+    let youtubeUrl = '';
+    if (rawUrl) {
+        if (!extractYouTubeId(rawUrl)) {
+            alert('Введите корректную ссылку на YouTube (watch?v=... или youtu.be/...)');
+            return;
+        }
+        youtubeUrl = rawUrl;
+    }
 
     if (editingTierListSongId) {
         const song = tierListSongs.find(s => s.id === editingTierListSongId);
         if (song) {
             song.name = name;
-            if (imageData && imageData !== song.image) {
+            song.youtubeUrl = youtubeUrl;
+            // изображение имеет смысл хранить только если нет YouTube-ссылки
+            if (youtubeUrl) {
+                if (song.imageId) {
+                    await deleteImageFromDB(song.imageId);
+                    song.image = '';
+                    song.imageId = '';
+                }
+            } else if (imageData && imageData !== song.image) {
                 if (song.imageId) await deleteImageFromDB(song.imageId);
                 const newImageId = `tier-img-${editingTierListSongId}-${Date.now()}`;
                 await saveImageToDB(newImageId, imageData);
@@ -320,15 +449,20 @@ async function saveTierListSong() {
         }
     } else {
         const songId = Date.now();
-        const imageId = imageData ? `tier-img-${songId}` : '';
-        if (imageData) {
+        let imageId = '';
+        // ponytail: при наличии YouTube-ссылки изображение игнорируем — превью возьмётся с YouTube
+        if (youtubeUrl) {
+            // изображение не сохраняем
+        } else if (imageData) {
+            imageId = `tier-img-${songId}`;
             await saveImageToDB(imageId, imageData);
         }
         tierListSongs.push({
             id: songId,
             name: name,
-            image: imageData,
-            imageId: imageId
+            image: youtubeUrl ? '' : imageData,
+            imageId: imageId,
+            youtubeUrl: youtubeUrl
         });
     }
 
@@ -364,7 +498,8 @@ async function exportTierList() {
             id: song.id,
             name: song.name,
             image: imageData,
-            imageId: ''
+            imageId: '',
+            youtubeUrl: song.youtubeUrl || ''
         });
     }
 
@@ -412,7 +547,8 @@ async function handleTierListImport(input) {
 
             for (const importedSong of data.songs) {
                 const newSongId = Date.now() + Math.floor(Math.random() * 1000);
-                let imageData = importedSong.image || '';
+                const youtubeUrl = importedSong.youtubeUrl || '';
+                let imageData = youtubeUrl ? '' : (importedSong.image || '');
                 let imageId = '';
 
                 if (imageData && imageData.startsWith('data:')) {
@@ -424,7 +560,8 @@ async function handleTierListImport(input) {
                     id: newSongId,
                     name: importedSong.name || 'Без названия',
                     image: imageData,
-                    imageId: imageId
+                    imageId: imageId,
+                    youtubeUrl: youtubeUrl
                 });
             }
 

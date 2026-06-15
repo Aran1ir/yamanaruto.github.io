@@ -310,6 +310,14 @@
                 <div class="tierlist-pool" id="tierListPool" ondragover="handlePoolDragOver(event)" ondragleave="handlePoolDragLeave(event)" ondrop="handlePoolDrop(event)">
                     <div class="tierlist-pool-empty" id="tierListPoolEmpty">Нет добавленных песен. Нажмите "Добавить песню" или импортируйте данные.</div>
                 </div>
+
+                <!-- Встроенный проигрыватель YouTube (открывается двойным кликом по карточке) -->
+                <div class="tierlist-player" id="tierListPlayerWrap" style="display:none;">
+                    <button class="close-player-btn" onclick="event.stopPropagation(); closeTierListPlayer()">✕</button>
+                    <div class="tierlist-player-inner">
+                        <div id="tierListPlayerContainer"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -323,6 +331,8 @@
             </label>
             <input type="file" id="tierListSongFile" class="file-input-hidden" accept="image/*" onchange="handleTierListSongImage(this)">
             <input type="text" class="tierlist-song-input" id="tierListSongName" placeholder="Название опенинга/песни">
+            <input type="text" class="tierlist-song-input" id="tierListSongUrl" placeholder="Ссылка на YouTube (https://youtu.be/...)" oninput="updateTierListSongPreviewUrl()">
+            <div class="tierlist-song-hint">Двойной клик по карточке песни откроет встроенный плеер. Превью берётся с YouTube.</div>
             <div class="modal-actions">
                 <button class="modal-btn secondary" onclick="closeModal('tierListSongModal')">Отмена</button>
                 <button class="modal-btn primary" id="tierListSongSaveBtn" onclick="saveTierListSong()">Добавить</button>
