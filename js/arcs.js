@@ -111,12 +111,24 @@ function renderArcs() {
     const container = document.getElementById('arcsContainer');
     if (arcs.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                <p>Нет добавленных арок</p>
-                <p style="font-size: 0.85rem; margin-top: 8px;">Нажмите кнопку выше, чтобы начать</p>
+            <div class="empty-state empty-state-hero">
+                <div class="empty-leaf-wrap">
+                    <div class="empty-leaf-glow"></div>
+                    <svg class="empty-leaf" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Спираль Узумаки -->
+                        <path class="empty-leaf-spiral" d="M60 60
+                            m -32, 0
+                            a 32,32 0 1,1 64,0
+                            a 26,26 0 1,1 -52,0
+                            a 20,20 0 1,1 40,0
+                            a 14,14 0 1,1 -28,0
+                            a 8,8 0 1,1 16,0"/>
+                    </svg>
+                </div>
+                <div class="empty-hint">
+                    Нажмите <span class="empty-hint-accent">«Добавить новую арку»</span> выше,<br>
+                    чтобы начать свой путь ниндзя
+                </div>
             </div>
         `;
         return;

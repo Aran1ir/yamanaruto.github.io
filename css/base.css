@@ -114,6 +114,87 @@ body {
     z-index: -1;
 }
 
+/* ============================================
+   КНОПКИ ПРОКРУТКИ (вверх / вниз) — правый нижний угол
+   ============================================ */
+.scroll-nav {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.scroll-nav-btn {
+    pointer-events: auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(20, 20, 25, 0.85);
+    border: 1px solid rgba(255, 107, 53, 0.35);
+    color: var(--chakra-orange);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 107, 53, 0.15);
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.scroll-nav-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.scroll-nav-btn.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.scroll-nav-btn:hover {
+    background: rgba(255, 107, 53, 0.15);
+    border-color: var(--chakra-orange);
+    color: var(--chakra-yellow);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 107, 53, 0.4);
+}
+
+.scroll-nav-btn:active {
+    transform: translateY(0) scale(0.94);
+}
+
+/* Скрываем навигацию, когда открыто любое модальное окно */
+body:has(.modal-overlay.active) .scroll-nav,
+body:has(.tierlist-modal-overlay.active) .scroll-nav {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 600px) {
+    .scroll-nav {
+        right: 16px;
+        bottom: 16px;
+        gap: 8px;
+    }
+    .scroll-nav-btn {
+        width: 42px;
+        height: 42px;
+    }
+    .scroll-nav-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
 [data-tooltip] { position: relative; }
 
 [data-tooltip]::after {

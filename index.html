@@ -48,6 +48,20 @@
         <path d="M50 40 L50 70 M35 55 L65 55"/>
     </svg>
 
+    <!-- Кнопки прокрутки страницы (вверх / вниз) -->
+    <div class="scroll-nav" id="scrollNav">
+        <button class="scroll-nav-btn scroll-nav-top" id="scrollTopBtn" onclick="scrollPageTo('top')" title="Наверх" data-tooltip="Наверх">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+        </button>
+        <button class="scroll-nav-btn scroll-nav-bottom" id="scrollBottomBtn" onclick="scrollPageTo('bottom')" title="Вниз" data-tooltip="В самый низ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+        </button>
+    </div>
+
     <header>
         <div class="header-glow"></div>
         <div class="logo-container">
@@ -154,8 +168,28 @@
             <div class="arc-edit-section">
                 <div class="arc-edit-section-label">Добавить серии</div>
                 <div class="episode-controls" style="margin-bottom: 0;">
-                    <input type="number" class="control-input" id="arcEditEpStart" placeholder="От" min="1">
-                    <input type="number" class="control-input" id="arcEditEpEnd" placeholder="До" min="1">
+                    <div class="number-spinner">
+                        <input type="number" class="control-input" id="arcEditEpStart" placeholder="От" min="1">
+                        <div class="number-spinner-controls">
+                            <button type="button" class="number-spinner-btn" data-target="arcEditEpStart" data-step="1" aria-label="Увеличить" data-tooltip="Увеличить">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+                            </button>
+                            <button type="button" class="number-spinner-btn" data-target="arcEditEpStart" data-step="-1" aria-label="Уменьшить" data-tooltip="Уменьшить">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="number-spinner">
+                        <input type="number" class="control-input" id="arcEditEpEnd" placeholder="До" min="1">
+                        <div class="number-spinner-controls">
+                            <button type="button" class="number-spinner-btn" data-target="arcEditEpEnd" data-step="1" aria-label="Увеличить" data-tooltip="Увеличить">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+                            </button>
+                            <button type="button" class="number-spinner-btn" data-target="arcEditEpEnd" data-step="-1" aria-label="Уменьшить" data-tooltip="Уменьшить">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                        </div>
+                    </div>
                     <button class="control-btn" onclick="addEpisodesFromEdit()">Добавить</button>
                 </div>
             </div>
@@ -366,6 +400,8 @@
     <script src="js/import-export.js"></script>
     <script src="js/tierlist.js"></script>
     <script src="js/rain-theme.js"></script>
+    <script src="js/scroll-nav.js"></script>
+    <script src="js/number-spinner.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
