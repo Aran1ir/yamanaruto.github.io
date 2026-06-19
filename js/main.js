@@ -9,6 +9,9 @@ function closeModal(modalId) {
         currentOpeningArcId = null;
         editingOpeningId = null;
     }
+    if (modalId === 'openingSelectorModal') {
+        currentOpeningArcId = null;
+    }
     if (modalId === 'tierListSongModal') { editingTierListSongId = null; }
     if (modalId === 'addArcCharModal') { currentCharArcId = null; }
     if (modalId === 'editArcCharModal') {
@@ -73,10 +76,14 @@ async function init() {
         }
     }
     arcIdCounter = arcs.length > 0 ? Math.max(...arcs.map(a => a.id)) + 1 : 1;
+
+    // Загружаем тир-лист ДО рендера арок, чтобы опенинги/эндинги
+    // могли ссылаться на песни из «Списка», а старые записи — мигрировать.
+    await initTierList();
+    await migrateArcOpeningsToTierList();
+
     renderArcs();
     updateStats();
-
-    await initTierList();
 }
 
 // Закрытие модальных окон по клику на overlay

@@ -62,6 +62,8 @@ function closeTierListModal() {
 }
 
 // ponytail: один встроенный плеер на тир-лист. Двойной клик по карточке открывает/закрывает.
+let lastTierSongScrollBackTo = null; // элемент карточки, к которому вернуться после закрытия плеера
+
 function toggleTierSongPlay(songId) {
     const song = tierListSongs.find(s => s.id === songId);
     if (!song) return;
@@ -75,6 +77,9 @@ function toggleTierSongPlay(songId) {
     const videoId = getTierSongYouTubeId(song);
     if (!videoId) return;
 
+    // Запоминаем карточку, чтобы вернуться к ней при закрытии плеера
+    lastTierSongScrollBackTo = document.querySelector(`.tierlist-item[data-song-id="${songId}"]`);
+
     destroyYTPlayer();
     currentPlayingTierSongId = songId;
 
@@ -86,7 +91,15 @@ function toggleTierSongPlay(songId) {
         if (document.getElementById('tierListPlayerContainer')) {
             createYTPlayer('tierListPlayerContainer', videoId);
         }
-    }, 100);
+        // Прокручиваем к открытому плееру
+        scrollTierListToPlayer();
+    }, 150);
+}
+
+function scrollTierListToPlayer() {
+    const wrap = document.getElementById('tierListPlayerWrap');
+    if (!wrap) return;
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function closeTierListPlayer() {
@@ -95,7 +108,23 @@ function closeTierListPlayer() {
     currentPlayingTierSongId = null;
     const wrap = document.getElementById('tierListPlayerWrap');
     if (wrap) wrap.style.display = 'none';
+
+    // Запоминаем элемент для возврата до перерисовки
+    const scrollBack = lastTierSongScrollBackTo;
+    lastTierSongScrollBackTo = null;
+
     renderTierList();
+
+    // После перерисовки прокручиваем обратно к карточке песни
+    if (scrollBack) {
+        const modal = document.querySelector('.tierlist-modal');
+        if (modal) {
+            const card = modal.querySelector(`.tierlist-item[data-song-id="${scrollBack.dataset.songId}"]`);
+            if (card) {
+                setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+            }
+        }
+    }
 }
 
 function renderTierList() {

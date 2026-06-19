@@ -268,21 +268,15 @@
         </div>
     </div>
 
-    <!-- Модальное окно добавления/редактирования опенинга/эндинга -->
-    <div class="modal-overlay" id="openingModal">
+    <!-- Модальное окно выбора опенингов/эндингов из списка тир-листа -->
+    <div class="modal-overlay" id="openingSelectorModal">
         <div class="modal">
-            <div class="modal-title" id="openingModalTitle">Добавить опенинг/эндинг</div>
-            <div style="margin-bottom: 16px;">
-                <select id="openingType" style="width:100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 16px; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none; margin-bottom: 12px;">
-                    <option value="opening" style="background:#1a1a1a;">Опенинг</option>
-                    <option value="ending" style="background:#1a1a1a;">Эндинг</option>
-                </select>
-                <input type="text" id="openingName" class="char-modal-name-input" placeholder="Название" style="margin-bottom: 12px;">
-                <input type="text" id="openingUrl" class="char-modal-name-input" placeholder="Ссылка на YouTube (watch?v= или youtu.be)" style="margin-bottom: 0;">
-            </div>
+            <div class="modal-title" id="openingSelectorTitle">Добавить опенинги</div>
+            <input type="text" class="char-modal-search-input" id="openingSelectorSearch" placeholder="Поиск по названию…" oninput="renderOpeningSelector()" style="margin: 16px 0 0;">
+            <div class="opening-selector-list" id="openingSelectorList"></div>
             <div class="modal-actions">
-                <button class="modal-btn secondary" onclick="closeModal('openingModal')">Отмена</button>
-                <button class="modal-btn primary" id="openingSaveBtn" onclick="saveOpeningFromModal()">Добавить</button>
+                <button class="modal-btn secondary" onclick="closeModal('openingSelectorModal')">Отмена</button>
+                <button class="modal-btn primary" onclick="addSelectedOpenings()">Добавить выбранные</button>
             </div>
         </div>
     </div>

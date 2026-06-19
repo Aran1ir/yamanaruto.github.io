@@ -195,7 +195,8 @@ function restorePlayerAfterRerender(arcId, openingId) {
     if (!arc) return;
     const opening = (arc.openings || []).find(op => op.id === openingId);
     if (!opening) return;
-    const videoId = extractYouTubeId(opening.url);
+    const song = getArcOpeningSong(opening);
+    const videoId = extractYouTubeId(song.youtubeUrl);
     if (!videoId) return;
     const containerId = `yt-player-${arcId}-${openingId}`;
     const container = document.getElementById(containerId);
@@ -285,19 +286,22 @@ function generateArcContent(arc) {
         <div class="content-section">
             <div class="section-label">Опенинги и Эндинги</div>
             <div class="openings-list">
-                ${(arc.openings || []).map(op => `
-                    <div class="opening-item ${(currentPlayingOpeningId === op.id) ? 'active' : ''}"
-                         onclick="event.stopPropagation(); toggleOpeningPlay(${arc.id}, ${op.id}, '${op.url.replace(/'/g, "\\'")}')">
+                ${(arc.openings || []).map(op => {
+                    const song = getArcOpeningSong(op);
+                    const playable = !!extractYouTubeId(song.youtubeUrl);
+                    return `
+                    <div class="opening-item ${(currentPlayingOpeningId === op.id && currentPlayingArcId === arc.id) ? 'active' : ''} ${!playable ? 'not-playable' : ''}"
+                         onclick="event.stopPropagation(); ${playable ? `toggleOpeningPlay(${arc.id}, ${op.id})` : ''}">
                         <span class="opening-type-badge">${op.type === 'opening' ? 'OP' : 'ED'}</span>
                         <div class="opening-info">
-                            <div class="opening-name">${escapeHtml(op.name)}</div>
+                            <div class="opening-name">${escapeHtml(song.name)}</div>
                         </div>
                         <div class="opening-actions-group" onclick="event.stopPropagation()">
-                            <button class="opening-action-btn opening-edit-btn" onclick="openEditOpeningModal(${arc.id}, ${op.id})" title="Редактировать">✎</button>
-                            <button class="opening-action-btn opening-delete-btn" onclick="deleteOpening(${arc.id}, ${op.id})" title="Удалить">✕</button>
+                            <button class="opening-action-btn opening-delete-btn" onclick="deleteOpening(${arc.id}, ${op.id})" title="Удалить из арки">✕</button>
                         </div>
                     </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
 
             ${isPlayerActive && activeOpening ? `
@@ -309,10 +313,16 @@ function generateArcContent(arc) {
                 </div>
             ` : ''}
 
-            <button class="add-opening-btn" onclick="event.stopPropagation(); openAddOpeningModal(${arc.id})">
-                ${icons.plus}
-                Добавить опенинг/эндинг
-            </button>
+            <div class="add-opening-buttons">
+                <button class="add-opening-btn narrow" onclick="event.stopPropagation(); openAddOpeningModal(${arc.id}, 'opening')">
+                    ${icons.plus}
+                    Добавить опенинг
+                </button>
+                <button class="add-opening-btn narrow" onclick="event.stopPropagation(); openAddOpeningModal(${arc.id}, 'ending')">
+                    ${icons.plus}
+                    Добавить эндинг
+                </button>
+            </div>
         </div>
     `;
 }

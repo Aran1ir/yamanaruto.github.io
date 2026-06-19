@@ -33,6 +33,12 @@ async function saveData() {
             globalCharId: char.globalCharId,
             isDead: char.isDead,
             selectedVariationId: char.selectedVariationId || null
+        })),
+        // Опенинги/эндинги хранятся как ссылки на песни тир-листа: { id, type, songId }
+        openings: (arc.openings || []).map(op => ({
+            id: op.id,
+            type: op.type,
+            songId: op.songId != null ? op.songId : undefined
         }))
     }));
     localStorage.setItem(ARCS_STORAGE_KEY, JSON.stringify(dataToSave));

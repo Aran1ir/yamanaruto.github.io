@@ -190,6 +190,152 @@
     color: var(--chakra-orange);
 }
 
+/* Узкие горизонтальные кнопки «Добавить опенинг» / «Добавить эндинг» */
+.add-opening-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.add-opening-btn.narrow {
+    flex: 1 1 200px;
+    min-width: 160px;
+    max-width: 260px;
+    justify-content: center;
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    border-width: 1.5px;
+}
+
+.add-opening-btn.narrow svg {
+    width: 18px;
+    height: 18px;
+}
+
+.add-opening-btn.narrow:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 215, 0, 0.08));
+    box-shadow: 0 0 16px rgba(255, 107, 53, 0.2);
+}
+
+/* Непроигрываемые элементы (нет YouTube-ссылки) — без подсветки ховера */
+.opening-item.not-playable {
+    cursor: default;
+    opacity: 0.6;
+}
+.opening-item.not-playable:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================
+   МОДАЛЬНОЕ ОКНО ВЫБОРА ОПЕНИНГОВ/ЭНДИНГОВ ИЗ СПИСКА
+   ============================================ */
+.opening-selector-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 16px;
+}
+
+.opening-selector-list::-webkit-scrollbar { width: 6px; }
+.opening-selector-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 3px; }
+.opening-selector-list::-webkit-scrollbar-thumb { background: rgba(255, 107, 53, 0.3); border-radius: 3px; }
+
+.opening-selector-empty {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.3);
+    line-height: 1.6;
+}
+
+.opening-selector-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.opening-selector-item:hover {
+    background: rgba(255, 107, 53, 0.06);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.opening-selector-item input[type="checkbox"] {
+    display: none;
+}
+
+.opening-selector-checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.opening-selector-item:hover .opening-selector-checkbox {
+    border-color: var(--chakra-orange);
+}
+
+.opening-selector-item input[type="checkbox"]:checked ~ .opening-selector-checkbox {
+    background: var(--chakra-orange);
+    border-color: var(--chakra-orange);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.4);
+}
+
+.opening-selector-item input[type="checkbox"]:checked ~ .opening-selector-checkbox::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 6px;
+    height: 11px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
+
+.opening-selector-name {
+    flex: 1;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.opening-selector-item.added {
+    opacity: 0.5;
+    cursor: default;
+}
+.opening-selector-item.added:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.opening-selector-badge {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--chakra-orange);
+    background: rgba(255, 107, 53, 0.12);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
 .drive-input {
     width: 100%;
     background: rgba(255, 255, 255, 0.03);

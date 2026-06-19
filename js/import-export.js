@@ -150,7 +150,11 @@ async function processImport(data) {
             if (char.selectedVariationId === undefined) char.selectedVariationId = null;
         });
         arc.openings.forEach(op => {
-            if (!op.id) op.id = Date.now();
+            if (!op.id) op.id = Date.now() + Math.floor(Math.random() * 10000);
+            // Гарантируем поле type
+            if (!op.type) op.type = 'opening';
+            // Старые записи (с name/url, без songId) мигрируются позже через
+            // migrateArcOpeningsToTierList() на следующей инициализации
         });
     });
 
